@@ -1,11 +1,12 @@
 PACKAGE_NAME := sauber
 GITHUB_ORG := kaosmaps
 PYTHON_VERSION := 3.12.3
-SUBPACKAGES := hello start
+SUBPACKAGES := start
 
-.PHONY: all clean scaffold create-files update-pyproject create-repos create-submodules setup-env install-deps setup-hooks update-submodules setup-github test run-cli
+.PHONY: all clean scaffold create-files update-pyproject create-repos create-submodules init-parent-repo setup-env install-deps setup-hooks update-submodules setup-github test run-cli
 
-all: clean scaffold create-files update-pyproject create-repos create-submodules setup-env install-deps setup-hooks update-submodules setup-github
+all: clean scaffold create-files update-pyproject create-repos remove-submodules init-parent-repo create-submodules setup-env install-deps setup-hooks update-submodules setup-github
+
 
 clean:
 	@echo "Cleaning up..."
@@ -214,17 +215,40 @@ create-repos:
 		fi; \
 	done
 
-create-submodules:
-	@echo "Initializing git repository if not exists..."
-	-git rev-parse --is-inside-work-tree > /dev/null 2>&1 || git init
+init-parent-repo:
+	@if [ -z "$(shell git rev-parse --verify HEAD 2>/dev/null)" ]; then \
+		git add . && \
+		git commit -m "Initial commit" || true; \
+	fi
+
+remove-submodules:
+	@echo "Removing submodules..."
+	@for subpackage in $(SUBPACKAGES); do \
+		git submodule deinit -f src/$(PACKAGE_NAME)/$$subpackage 2>/dev/null || true; \
+		git rm -f src/$(PACKAGE_NAME)/$$subpackage 2>/dev/null || true; \
+		rm -rf .git/modules/src/$(PACKAGE_NAME)/$$subpackage 2>/dev/null || true; \
+		rm -rf src/$(PACKAGE_NAME)/$$subpackage 2>/dev/null || true; \
+	done
+
+# create-submodules: init-parent-repo
+# 	@echo "Initializing git repository if not exists..."
+# 	-git init
+# 	@echo "Adding submodules..."
+# 	@for subpackage in $(SUBPACKAGES); do \
+# 		if [ ! -d "src/$(PACKAGE_NAME)/$$subpackage" ]; then \
+# 			git submodule add -f https://github.com/$(GITHUB_ORG)/$(PACKAGE_NAME)-$$subpackage.git src/$(PACKAGE_NAME)/$$subpackage || echo "Failed to add submodule $(PACKAGE_NAME)-$$subpackage. Continuing..."; \
+# 		else \
+# 			echo "Submodule $(PACKAGE_NAME)-$$subpackage already exists. Skipping..."; \
+# 		fi; \
+# 	done
+# 	@git submodule update --init --recursive
+
+create-submodules: remove-submodules
 	@echo "Adding submodules..."
 	@for subpackage in $(SUBPACKAGES); do \
-		if [ ! -d "src/$(PACKAGE_NAME)/$$subpackage" ]; then \
-			git submodule add https://github.com/$(GITHUB_ORG)/$(PACKAGE_NAME)-$$subpackage.git src/$(PACKAGE_NAME)/$$subpackage 2>/dev/null || echo "Submodule $(PACKAGE_NAME)-$$subpackage already exists or couldn't be added. Continuing..."; \
-		else \
-			echo "Submodule $(PACKAGE_NAME)-$$subpackage already exists. Skipping..."; \
-		fi; \
+		git submodule add -f https://github.com/$(GITHUB_ORG)/$(PACKAGE_NAME)-$$subpackage.git src/$(PACKAGE_NAME)/$$subpackage || echo "Failed to add submodule $(PACKAGE_NAME)-$$subpackage. Continuing..."; \
 	done
+	@git submodule update --init --recursive
 
 setup-env:
 	@echo "Setting up Python environment..."

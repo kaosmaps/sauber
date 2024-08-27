@@ -1,0 +1,3 @@
+[submodule "src/sauber/start"]
+	path = src/sauber/start
+	url = https://github.com/kaosmaps/sauber-start.git
