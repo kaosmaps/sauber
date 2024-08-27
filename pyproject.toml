@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "sauber"
+version = "0.0.1"
+description = "A Python package with submodules"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.12.3"
+fastapi = "^0.112.0"
+uvicorn = "^0.30.5"
+click = "^8.1.7"
+python-dotenv-vault = "^0.6.4"
+pydantic = "^2.8.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+ruff = "^0.5.7"
+isort = "^5.13.2"
+mypy = "^1.11.1"
+pre-commit = "^3.7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+sauber = "src.sauber.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
