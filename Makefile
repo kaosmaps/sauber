@@ -273,5 +273,3 @@ test:
 
 run-cli:
 	poetry run python -m src.$(PACKAGE_NAME).cli
-
-.IGNORE: create-repos create-submodules
