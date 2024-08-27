@@ -6,7 +6,7 @@ SUBPACKAGES := hello start
 
 .PHONY: all clean scaffold create-files update-pyproject create-repos create-submodules setup-env install-deps setup-hooks update-submodules setup-github test run-cli
 
-all: clean scaffold create-files update-pyproject create-repos create-submodules setup-env install-deps setup-hooks update-submodules setup-github || handle-error
+all: clean scaffold create-files update-pyproject create-repos create-submodules setup-env install-deps setup-hooks update-submodules setup-github
 
 clean:
 	@echo "Cleaning up..."
