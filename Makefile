@@ -1,4 +1,3 @@
-# Makefile
 PACKAGE_NAME := sauber
 GITHUB_ORG := kaosmaps
 PYTHON_VERSION := 3.12.3
